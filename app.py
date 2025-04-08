@@ -34,10 +34,11 @@ def buchen():
     }
 
     response = requests.post(
-        "https://acuityscheduling.com/api/v1/appointments",
-        auth=HTTPBasicAuth(USER_ID, API_KEY),
-        json=data
-    )
+    "https://acuityscheduling.com/api/v1/appointments",
+    auth=HTTPBasicAuth(USER_ID, API_KEY),
+    headers={"Content-Type": "application/json"},
+    json=data
+)
 
     if response.status_code == 200:
         return "Termin erfolgreich gebucht!"
