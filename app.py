@@ -36,7 +36,7 @@ def buchen():
     response = requests.post(
         "https://acuityscheduling.com/api/v1/appointments",
         auth=HTTPBasicAuth(USER_ID, API_KEY),
-        data=data
+        json=data
     )
 
     if response.status_code == 200:
