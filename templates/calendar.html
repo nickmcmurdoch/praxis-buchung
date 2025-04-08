@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Terminbuchung</title>
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    #calendar { max-width: 700px; margin: auto; }
+    #buchung { margin-top: 2em; display: none; }
+    label { display: block; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">Terminbuchung</h2>
+  <div id='calendar'></div>
+
+  <div id="buchung">
+    <h3>Termin buchen:</h3>
+    <form id="bookingForm">
+      <label>Vorname (2 Buchstaben): <input type="text" name="firstName" maxlength="2" required></label>
+      <label>Nachname (2 Buchstaben): <input type="text" name="lastName" maxlength="2" required></label>
+      <label>E-Mail (optional): <input type="email" name="email"></label>
+      <label>Telefonnummer (optional): <input type="tel" name="phone"></label>
+      <label>Ort der Sitzung:
+        <select name="location">
+          <option value="vor Ort">Vor Ort</option>
+          <option value="online">Online</option>
+        </select>
+      </label>
+      <input type="hidden" name="datetime" id="selectedDatetime">
+      <button type="submit">Termin buchen</button>
+    </form>
+    <div id="feedback" style="margin-top:1em;"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let calendarEl = document.getElementById('calendar');
+      let calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        locale: 'de',
+        events: '/slots',
+        eventClick: function(info) {
+          const datetime = info.event.start.toISOString().slice(0,16);
+          document.getElementById('selectedDatetime').value = datetime;
+          document.getElementById('buchung').style.display = 'block';
+          window.scrollTo({ top: document.getElementById('buchung').offsetTop, behavior: 'smooth' });
+        }
+      });
+      calendar.render();
+
+      document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+          firstName: form.firstName.value,
+          lastName: form.lastName.value,
+          email: form.email.value,
+          phone: form.phone.value,
+          datetime: form.datetime.value,
+          location: form.location.value
+        };
+        const res = await fetch('/buchen', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        document.getElementById('feedback').innerText = result.success ? "✅ Termin erfolgreich gebucht!" : "❌ Fehler: " + (result.error?.message || 'Unbekannter Fehler');
+      });
+    });
+  </script>
+</body>
+</html>
