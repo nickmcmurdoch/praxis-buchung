@@ -1,0 +1,5 @@
+
+.fc { font-family: Arial, sans-serif; font-size: 14px; }
+.fc .fc-toolbar { display: flex; justify-content: space-between; margin-bottom: 1em; }
+.fc .fc-button { background: #3a87ad; color: white; padding: 5px 10px; border: none; border-radius: 4px; }
+.fc .fc-button:hover { background: #327aa5; }
